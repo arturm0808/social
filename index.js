@@ -9,6 +9,7 @@ const { MONGO_URI } = require("./config");
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  context: ({ req }) => ({ req }),
 });
 
 // Connect to MongoDB
@@ -18,7 +19,7 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => {
-    console.log("MongoDB connected 🤩");
+    console.log("MongoDB connected");
     return server.listen({ port: 5000 });
   })
   .then((res) => console.log(`Server started on port:${res.url} ☘️`));

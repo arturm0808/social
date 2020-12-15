@@ -32,14 +32,14 @@ module.exports = {
 
       const user = await User.findOne({ username });
       if (!user) {
-        errors.general = "User not found";
-        throw new UserInputError("User not found");
+        errors.general = "User not found 💩";
+        throw new UserInputError("User not found 💩");
       }
 
       const match = await bcrypt.compare(password, user.password);
       if (!match) {
-        errors.general = "Wrong credentials";
-        throw new UserInputError("Wrong credentials", { errors });
+        errors.general = "Wrong credentials 💩";
+        throw new UserInputError("Wrong credentials 💩", { errors });
       }
 
       const token = generateToken(user);
@@ -63,14 +63,14 @@ module.exports = {
       );
 
       if (!valid) {
-        throw new UserInputError("Errors", { errors });
+        throw new UserInputError("Errors 💩", { errors });
       }
       // Make sure user dosent already exist
       const user = await User.findOne({ username });
       if (user) {
-        throw new UserInputError("User name is taken", {
+        throw new UserInputError("User name is taken 💩", {
           errors: {
-            username: "This username is taken",
+            username: "This username is taken 💩",
           },
         });
       }
