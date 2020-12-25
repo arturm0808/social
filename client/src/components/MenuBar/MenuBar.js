@@ -6,8 +6,6 @@ const MenuBar = () => {
   const [activeItem, setActiveItem] = useState("");
   const { pathname } = useLocation();
 
-  // pathname.split("/")[1]
-
   useEffect(() => {
     if (pathname === "/") {
       setActiveItem("home");
