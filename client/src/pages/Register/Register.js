@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Form, Button } from "semantic-ui-react";
 import { gql, useMutation } from "@apollo/client";
 
+import { useForm } from "../../util/hooks";
+
 const REGISTER_USER = gql`
   mutation register(
     $username: String!
@@ -28,12 +30,14 @@ const REGISTER_USER = gql`
 
 const Register = (props) => {
   const [errors, setErrors] = useState({});
-  const [values, setValues] = useState({
+
+  const { onChange, onSubmit, values } = useForm(registerUser, {
     username: "",
     password: "",
     confirmPassword: "",
     email: "",
   });
+
   const [addUser, { loading }] = useMutation(REGISTER_USER, {
     update(_, result) {
       props.history.push("/");
@@ -44,17 +48,9 @@ const Register = (props) => {
     variables: values,
   });
 
-  const onChange = (e) => {
-    setValues({
-      ...values,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const onSubmit = (e) => {
-    e.preventDefault();
+  function registerUser() {
     addUser();
-  };
+  }
 
   return (
     <div>
