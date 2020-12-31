@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Form, Button } from "semantic-ui-react";
 import { gql, useMutation } from "@apollo/client";
 
+import { useForm } from "../../util/hooks";
+import { AuthContext } from "../../context/auth";
+
 const LOGIN_USER = gql`
-  mutation register($email: String!, $password: String!) {
-    register(loginInput: { email: $email, password: $password }) {
+  mutation login($username: String!, $password: String!) {
+    login(username: $username, password: $password) {
       id
       email
       username
@@ -15,15 +18,17 @@ const LOGIN_USER = gql`
 `;
 
 const Login = (props) => {
+  const context = useContext(AuthContext);
   const [errors, setErrors] = useState({});
-  const [values, setValues] = useState({
+
+  const { onChange, onSubmit, values } = useForm(loginUserCallback, {
     username: "",
     password: "",
-    confirmPassword: "",
-    email: "",
   });
-  const [addUser, { loading }] = useMutation(LOGIN_USER, {
-    update(_, result) {
+
+  const [loginUser, { loading }] = useMutation(LOGIN_USER, {
+    update(_, { data: { login: userData } }) {
+      context.login(userData);
       props.history.push("/");
     },
     onError(err) {
@@ -32,22 +37,14 @@ const Login = (props) => {
     variables: values,
   });
 
-  const onChange = (e) => {
-    setValues({
-      ...values,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const onSubmit = (e) => {
-    e.preventDefault();
-    addUser();
-  };
+  function loginUserCallback() {
+    loginUser();
+  }
 
   return (
     <div>
       <Form onSubmit={onSubmit} noValidate className={loading ? "loading" : ""}>
-        <h1>Register</h1>
+        <h1>Login</h1>
         <Form.Input
           label="Username"
           placeholder="Username"
@@ -58,30 +55,12 @@ const Login = (props) => {
           onChange={onChange}
         />
         <Form.Input
-          label="Email"
-          placeholder="Email"
-          name="email"
-          type="text"
-          value={values.email}
-          error={errors.email ? true : false}
-          onChange={onChange}
-        />
-        <Form.Input
           label="Password"
           placeholder="Password"
           name="password"
           type="password"
           value={values.password}
           error={errors.password ? true : false}
-          onChange={onChange}
-        />
-        <Form.Input
-          label="Confirm Password"
-          placeholder="Confirm Password"
-          name="confirmPassword"
-          type="password"
-          error={errors.confirmPassword ? true : false}
-          value={values.confirmPassword}
           onChange={onChange}
         />
         <Button type="submit" primary>
